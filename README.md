@@ -16,7 +16,7 @@ It features:
 
 | Layer         | Technology                         |
 |--------------|------------------------------------|
-| Frontend      | Laravel 11 + Blade                 |
+| Frontend      | Laravel 12 + Blade                 |
 | Backend Logic | Go (v1.22+)                        |
 | API           | gRPC with Protocol Buffers         |
 | Database      | PostgreSQL                         |
