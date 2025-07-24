@@ -1,0 +1,70 @@
+version: '3.9'
+
+services:
+  laravel:
+    build:
+      context: ./php
+    container_name: laravel
+    volumes:
+      - ./php:/var/www
+    working_dir: /var/www
+    depends_on:
+      - postgres
+    networks:
+      - clinic-net
+    command: >
+      sh -c "
+      composer install &&
+      php artisan migrate &&
+      php-fpm
+      "
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./php:/var/www
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - laravel
+    networks:
+      - clinic-net
+
+  go:
+    build:
+      context: ./go
+    container_name: go-service
+    depends_on:
+      - postgres
+    networks:
+      - clinic-net
+    ports:
+      - "50051:50051"
+    command: >
+      sh -c "
+      go mod tidy &&
+      go build -o server ./cmd/server &&
+      ./server
+      "
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: clinic
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - clinic-net
+
+volumes:
+  pgdata:
+
+networks:
+  clinic-net:
