@@ -1,4 +1,5 @@
 <?php
+namespace Features\User\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
